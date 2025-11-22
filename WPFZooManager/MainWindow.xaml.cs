@@ -54,7 +54,7 @@ namespace WPFZooManager
         {
             try
             {
-                string query = @"SELECT a.Name FROM Animal a
+                string query = @"SELECT a.Id, a.Name FROM Animal a
                                 INNER JOIN ZooAnimal za ON a.Id = za.AnimalId
                                 WHERE za.ZooID = @ZooId";
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
@@ -201,7 +201,24 @@ namespace WPFZooManager
 
         private void RemoveAnimal_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                string query = "delete from ZooAnimal where ZooId = @ZooId and AnimalId = @AnimalId";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@ZooId", listZoos.SelectedValue);
+                sqlCommand.Parameters.AddWithValue("@AnimalId", listAssociatedAnimals.SelectedValue);
+                sqlCommand.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                ShowAssociatedAnimals();
+            }
         }
 
         private void UpdateZoo_Click(object sender, RoutedEventArgs e)
